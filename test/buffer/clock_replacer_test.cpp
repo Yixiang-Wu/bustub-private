@@ -17,9 +17,11 @@
 #include "buffer/clock_replacer.h"
 #include "gtest/gtest.h"
 
+#include "common/logger.h"
 namespace bustub {
 
-TEST(ClockReplacerTest, DISABLED_SampleTest) {
+// TEST(ClockReplacerTest, DISABLED_SampleTest) {
+TEST(ClockReplacerTest, SampleTest) {
   ClockReplacer clock_replacer(7);
 
   // Scenario: unpin six elements, i.e. add them to the replacer.
@@ -36,6 +38,7 @@ TEST(ClockReplacerTest, DISABLED_SampleTest) {
   int value;
   clock_replacer.Victim(&value);
   EXPECT_EQ(1, value);
+  //LOG_DEBUG("size = %ld", clock_replacer.Size());
   clock_replacer.Victim(&value);
   EXPECT_EQ(2, value);
   clock_replacer.Victim(&value);
