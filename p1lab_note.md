@@ -15,3 +15,12 @@
 3. C++中，thread头文件，std::ref, join和detach，编译时 -pthread， 函数定义&， 传参+ref
 4. numeric中 accumulate
 5. time中 clock，毫秒
+-------
+### 线程安全，互斥访问
+1. mutex
+  1. 声明mutex变量
+  2. lock，unlock，try_lock
+2. atomic
+  1. 将要互斥访问的基本变量声明为atomic类型，例如atomic_int cnt
+  2. 像使用基本变量一样使用它
+  3. 比mutex效率高
