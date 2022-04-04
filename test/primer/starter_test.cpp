@@ -13,6 +13,9 @@
 #include <functional>
 #include <numeric>
 
+// 当需要DEBUG的时候
+// #include "common/logger.h"
+
 #include "common/exception.h"
 #include "gtest/gtest.h"
 #include "primer/p0_starter.h"
@@ -44,7 +47,9 @@ TEST(StarterTest, SampleTest) {
 /** Test that matrix initialization works as expected */
 TEST(StarterTest, DISABLED_InitializationTest) {
   auto matrix = std::make_unique<RowMatrix<int>>(2, 2);
-
+  // 测试DEBUG功能
+  // LOG_INFO("# rows = %d, cols = %d", matrix->GetRowCount(), matrix->GetColumnCount());
+  // LOG_DEBUG("# rows = %d, cols = %d", matrix->GetRowCount(), matrix->GetColumnCount());
   // Source contains too few elements
   std::vector<int> source0(3);
   std::iota(source0.begin(), source0.end(), 0);
@@ -69,7 +74,7 @@ TEST(StarterTest, DISABLED_InitializationTest) {
 }
 
 TEST(StarterTest, DISABLED_ElementAccessTest) {
-  auto matrix = std::make_unique<RowMatrix<int>>(2, 2);
+  std::unique_ptr<Matrix<int>> matrix = std::make_unique<RowMatrix<int>>(2, 2);
 
   std::vector<int> source(4);
   std::iota(source.begin(), source.end(), 0);
