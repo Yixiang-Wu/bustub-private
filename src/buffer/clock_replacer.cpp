@@ -35,7 +35,12 @@ ClockReplacer::~ClockReplacer(){
 }
 
 bool ClockReplacer::Victim(frame_id_t *frame_id) { 
-    if(num_pages_available_ == 0) return false;
+    latch.lock();
+
+    if(num_pages_available_ == 0){
+        latch.unlock();
+        return false;
+    }
 
     frame_id_t page_id;
 
@@ -62,25 +67,36 @@ bool ClockReplacer::Victim(frame_id_t *frame_id) {
     num_pages_available_--;
     clock_hand_ = Clock_list.erase(clock_hand_);
     if(clock_hand_ == Clock_list.end()) clock_hand_ = Clock_list.begin();
+    latch.unlock();
     return true;
 }
 
 void ClockReplacer::Pin(frame_id_t frame_id) {
-    if(PINs[frame_id] == true) return;
-    if(Miss[frame_id] == true) return;
+    latch.lock();
+
+    if(PINs[frame_id] == true) { latch.unlock(); return; }
+    if(Miss[frame_id] == true) { latch.unlock(); return; }
     PINs[frame_id] = true;
     num_pages_available_ --;
+
+    latch.unlock();
 }
 
 void ClockReplacer::Unpin(frame_id_t frame_id) {
-    if(Miss[frame_id] == true) return;
-    if(PINs[frame_id] == false) return;
+    latch.lock();
+
+    if(Miss[frame_id] == true) { latch.unlock(); return; }
+    if(PINs[frame_id] == false) { latch.unlock(); return; }
     PINs[frame_id] = false;
     Refs[frame_id] = true;
     num_pages_available_ ++;
+
+    latch.unlock();
 }
 
 size_t ClockReplacer::Size() { 
+    latch.lock();
+    latch.unlock();
     return num_pages_available_;
 }
 

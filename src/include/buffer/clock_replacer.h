@@ -18,7 +18,7 @@
 
 #include "buffer/replacer.h"
 #include "common/config.h"
-
+#include <mutex>
 namespace bustub {
 
 /**
@@ -48,6 +48,7 @@ class ClockReplacer : public Replacer {
 
   // 注意我们针对的是，内存中占据了页框的页，我们选择一页，丢掉
   // ref=1 表示该页最近被使用到，pin=1 表示该页正被进程使用， miss=1 表示该页已经丢出去了
+  std::mutex latch;
   std::vector<bool> Refs;
   std::vector<bool> PINs;
   std::vector<bool> Miss;
