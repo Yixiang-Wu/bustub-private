@@ -38,7 +38,6 @@ TEST(ClockReplacerTest, SampleTest) {
   int value;
   clock_replacer.Victim(&value);
   EXPECT_EQ(1, value);
-  //LOG_DEBUG("size = %ld", clock_replacer.Size());
   clock_replacer.Victim(&value);
   EXPECT_EQ(2, value);
   clock_replacer.Victim(&value);
