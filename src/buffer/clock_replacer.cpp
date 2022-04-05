@@ -15,13 +15,12 @@
 namespace bustub {
 
 ClockReplacer::ClockReplacer(size_t num_pages) {
-    this->num_pages_ = num_pages;
-    this->num_pages_available_ = 0;
-    // Ref随意初始化，Pin初始化为1，Miss初始化为0
+    this->num_frames_ = num_pages;
+    this->num_frames_available_ = 0;
+    // Ref随意初始化，Pin初始化为1
     this->Refs = std::vector<bool>(num_pages, true);
     this->PINs = std::vector<bool>(num_pages, true);
-    this->Miss = std::vector<bool>(num_pages, false);
-    for(frame_id_t i = 0; i < this->num_pages_; i++)
+    for(frame_id_t i = 0; i < this->num_frames_; i++)
         this->Clock_list.push_back(i);
     this->clock_hand_ = Clock_list.begin();
 }
@@ -37,24 +36,22 @@ ClockReplacer::~ClockReplacer(){
 bool ClockReplacer::Victim(frame_id_t *frame_id) { 
     latch.lock();
 
-    if(num_pages_available_ == 0){
+    if(num_frames_available_ == 0){
         latch.unlock();
         return false;
     }
 
-    frame_id_t page_id;
-
     while(true){
-        page_id = *clock_hand_;
+        *frame_id = *clock_hand_;
         
-        if(PINs[page_id] == true) ;
+        if(PINs[*frame_id] == true) ;
 
         else{
-            if(Refs[page_id] == false){
+            if(Refs[*frame_id] == false){
                 break;
             }
             else{
-                Refs[page_id] = false;
+                Refs[*frame_id] = false;
             }
         }
 
@@ -62,10 +59,11 @@ bool ClockReplacer::Victim(frame_id_t *frame_id) {
         if(clock_hand_ == Clock_list.end()) clock_hand_ = Clock_list.begin();
     }
 
-    *frame_id = *clock_hand_;
-    Miss[*frame_id] = true;
-    num_pages_available_--;
-    clock_hand_ = Clock_list.erase(clock_hand_);
+    /* if I use Pin(*frame_id) here, it will have a deadlock  */
+    PINs[*frame_id] = true;
+    num_frames_available_ --; 
+
+    clock_hand_++;
     if(clock_hand_ == Clock_list.end()) clock_hand_ = Clock_list.begin();
     latch.unlock();
     return true;
@@ -75,9 +73,8 @@ void ClockReplacer::Pin(frame_id_t frame_id) {
     latch.lock();
 
     if(PINs[frame_id] == true) { latch.unlock(); return; }
-    if(Miss[frame_id] == true) { latch.unlock(); return; }
     PINs[frame_id] = true;
-    num_pages_available_ --;
+    num_frames_available_ --;
 
     latch.unlock();
 }
@@ -85,11 +82,10 @@ void ClockReplacer::Pin(frame_id_t frame_id) {
 void ClockReplacer::Unpin(frame_id_t frame_id) {
     latch.lock();
 
-    if(Miss[frame_id] == true) { latch.unlock(); return; }
     if(PINs[frame_id] == false) { latch.unlock(); return; }
     PINs[frame_id] = false;
     Refs[frame_id] = true;
-    num_pages_available_ ++;
+    num_frames_available_ ++;
 
     latch.unlock();
 }
@@ -97,7 +93,7 @@ void ClockReplacer::Unpin(frame_id_t frame_id) {
 size_t ClockReplacer::Size() { 
     latch.lock();
     latch.unlock();
-    return num_pages_available_;
+    return num_frames_available_;
 }
 
 }  // namespace bustub

@@ -30,7 +30,6 @@ class ClockReplacer : public Replacer {
    * Create a new ClockReplacer.
    * @param num_pages the maximum number of pages the ClockReplacer will be required to store
    */
-  // PINs全为1，Ref随意
   explicit ClockReplacer(size_t num_pages);
 
   /**
@@ -51,11 +50,10 @@ class ClockReplacer : public Replacer {
   std::mutex latch;
   std::vector<bool> Refs;
   std::vector<bool> PINs;
-  std::vector<bool> Miss;
   std::list<frame_id_t> Clock_list;
   std::list<frame_id_t>::iterator clock_hand_;
-  int num_pages_;
-  int num_pages_available_;
+  int num_frames_;
+  int num_frames_available_;
 };
 
 }  // namespace bustub
